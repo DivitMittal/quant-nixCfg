@@ -1,0 +1,40 @@
+## Virtual (non-installable) uv project whose only job is to pin OpenBB
+## Platform + its extensions into a uv.lock that uv2nix turns into a Nix
+## package set. Each optional-dependency group is one OpenBB extension;
+## package.nix picks which groups end up in the venv. Only extensions
+## that ship a v5-compatible (openbb-core >= 2) release are listed —
+## commercial providers (fmp, polygon, intrinio, tiingo, ...) are still
+## pinned to openbb-core < 2 upstream and can't coexist with openbb 5.
+##
+## Re-lock after editing: `uv lock --directory pkgs/openbb`
+[project]
+name = "openbb-nix"
+version = "5.0.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["openbb==5.0.0"]
+
+[project.optional-dependencies]
+# Routers — the `obb.<namespace>` asset-class menus
+commodity = ["openbb-commodity>=2.0.0"]
+crypto = ["openbb-crypto>=2.0.0"]
+currency = ["openbb-currency>=2.0.0"]
+derivatives = ["openbb-derivatives>=2.0.0"]
+econometrics = ["openbb-econometrics>=2.0.0"]
+economy = ["openbb-economy>=2.0.0"]
+equity = ["openbb-equity>=2.0.0"]
+etf = ["openbb-etf>=2.0.0"]
+fixedincome = ["openbb-fixedincome>=2.0.0"]
+index = ["openbb-index>=2.0.0"]
+quantitative = ["openbb-quantitative>=2.0.0"]
+technical = ["openbb-technical>=2.0.1"]
+# Providers not already bundled by `openbb` itself
+yfinance = ["openbb-yfinance>=2.0.0"]
+
+[tool.uv]
+package = false
+## cryptography >= 49 dropped macOS x86_64 wheels; without this, an Intel
+## Mac builds it from source (maturin + Rust + vendored cargo hash). Scoped
+## by marker, so Linux/aarch64-darwin still get the newest release.
+constraint-dependencies = [
+  "cryptography<49; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]

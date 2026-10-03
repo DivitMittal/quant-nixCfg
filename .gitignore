@@ -2,4 +2,3 @@ result
 result-*
 .direnv/
 experiments/*/src/
-experiments/*/.venv/
