@@ -34,29 +34,6 @@ _: {
           };
         };
       };
-
-      qlib = {
-        devshell = {
-          name = "qlib-experiment";
-          motd = ''
-            {202}Qlib experiment shell{reset}
-
-            git clone https://github.com/microsoft/qlib experiments/qlib/src
-            cd experiments/qlib/src
-            uv pip install pyqlib   # or `uv pip install -e .` for an editable checkout
-            qrun examples/benchmarks/LightGBM/workflow_config_lightgbm_Alpha158.yaml
-          '';
-          packages = pkgs.lib.attrsets.attrValues {
-            inherit
-              (pkgs)
-              python312
-              uv
-              cmake
-              pkg-config
-              ;
-          };
-        };
-      };
     };
   };
 }
