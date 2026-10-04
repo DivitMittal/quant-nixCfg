@@ -1,0 +1,31 @@
+## Virtual (non-installable) uv project pinning NautilusTrader into a
+## uv.lock for uv2nix (same pattern as ../openbb). Each optional-dependency
+## group mirrors one of nautilus_trader's own extras; package.nix picks
+## which land in the venv. Core adapters (binance, bybit, okx, databento,
+## dydx, hyperliquid, tardis, kraken, bitmex, deribit, sandbox, …) are
+## Rust/pyo3 and ship inside the base wheel — only the ones below pull in
+## extra Python deps.
+##
+## Re-lock after editing: `uv lock --directory pkgs/nautilus-trader`
+[project]
+name = "nautilus-trader-nix"
+version = "1.231.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["nautilus_trader==1.231.0"]
+
+[project.optional-dependencies]
+betfair = ["nautilus_trader[betfair]==1.231.0"]
+ib = ["nautilus_trader[ib]==1.231.0"]
+polymarket = ["nautilus_trader[polymarket]==1.231.0"]
+docker = ["nautilus_trader[docker]==1.231.0"]
+visualization = ["nautilus_trader[visualization]==1.231.0"]
+
+[tool.uv]
+package = false
+## No macOS x86_64 wheel exists upstream, and the source build is a full
+## Rust workspace + Cython — not supported here. Restricting resolution keeps
+## uv from locking an sdist-only fork for a platform we don't build.
+environments = [
+  "sys_platform == 'linux'",
+  "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
