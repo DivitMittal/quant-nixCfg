@@ -9,32 +9,6 @@
 _: {
   perSystem = {pkgs, ...}: {
     devshells = {
-      nautilus-trader = {
-        devshell = {
-          name = "nautilus-trader-experiment";
-          motd = ''
-            {202}nautilus_trader experiment shell{reset}
-
-            git clone https://github.com/nautechsystems/nautilus_trader experiments/nautilus-trader/src
-            cd experiments/nautilus-trader/src
-            uv pip install nautilus_trader   # prebuilt wheel, if one exists for this platform
-            # otherwise (per upstream README): rustup toolchain is on PATH here, then `make build`
-          '';
-          packages = pkgs.lib.attrsets.attrValues {
-            inherit
-              (pkgs)
-              python312
-              uv
-              cargo
-              rustc
-              clang
-              pkg-config
-              openssl
-              ;
-          };
-        };
-      };
-
       qlib = {
         devshell = {
           name = "qlib-experiment";
