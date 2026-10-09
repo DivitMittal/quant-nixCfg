@@ -13,7 +13,7 @@ Mirrors the shape of [ai-nixCfg](https://github.com/DivitMittal/ai-nixCfg)
 ./
 ├── experiments/       # low-ceremony devShells for trying tools — see experiments/README.md
 ├── flake/             # flake-parts modules: formatters.nix, checks.nix, devshells.nix, experiments.nix
-├── modules/home/      # graduated home-manager services (programs.openalgo, systemd user service)
+├── modules/home/      # graduated home-manager modules (programs.openalgo + systemd user service, programs.ibkr)
 ├── pkgs/openalgo/     # OpenAlgo packaged via uv2nix (pyproject.toml + uv.lock)
 └── README.md
 ```
