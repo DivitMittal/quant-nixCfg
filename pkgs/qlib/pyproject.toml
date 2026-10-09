@@ -1,0 +1,46 @@
+## Virtual (non-installable) uv project pinning Microsoft Qlib (`pyqlib`)
+## into a uv.lock for uv2nix (same pattern as ../openbb). Each
+## optional-dependency group is a model backend or tool a workflow can opt
+## into; package.nix picks which land in the venv. LightGBM, MLflow, cvxpy
+## and Jupyter already come with pyqlib itself.
+##
+## Re-lock after editing: `uv lock --directory pkgs/qlib`
+[project]
+name = "qlib-nix"
+version = "0.9.7"
+requires-python = ">=3.12,<3.13"
+dependencies = ["pyqlib==0.9.7"]
+
+[project.optional-dependencies]
+# Deep-learning models (LSTM/GRU/ALSTM/Transformer/TabNet/… in qlib.contrib.model).
+# CPU builds (see [tool.uv.sources]); PyTorch stopped shipping macOS x86_64
+# wheels after 2.2, so this extra is a no-op on Intel Macs.
+torch = ["torch>=2.2; sys_platform != 'darwin' or platform_machine != 'x86_64'"]
+# Alternative GBDT backends (qlib.contrib.model.xgboost / catboost_model)
+xgboost = ["xgboost>=2.0"]
+catboost = ["catboost>=1.2"]
+# pyqlib[analysis]: report/graph helpers in qlib.contrib.report
+analysis = ["pyqlib[analysis]==0.9.7"]
+# Data collectors under upstream scripts/data_collector (Yahoo, BaoStock)
+collectors = ["yahooquery", "baostock"]
+
+[tool.uv]
+package = false
+## Last releases with macOS x86_64 wheels — keeps an Intel Mac on prebuilt
+## wheels instead of Rust/C source builds. Marker-scoped, so Linux and
+## aarch64-darwin still resolve the newest releases.
+constraint-dependencies = [
+  "cryptography<49; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "argon2-cffi-bindings<26; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "scs<3.2.9; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]
+
+## CPU-only torch: the default PyPI Linux wheels drag in ~3 GB of CUDA
+## libraries. Point this index at a cuXXX one for GPU hosts.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
